@@ -1,0 +1,16 @@
+;;; cpuman.setup -*- scheme -*-
+
+;; Compile the extension
+(compile -s -O3 -d1 -j cpuman cpuman.scm)
+(compile -s -O3 -d1 cpuman.import.scm)
+
+;; Compile the application (server)
+(compile -O3 -d1 cpuman-app.scm -o cpuman)
+
+(install-extension 'cpuman
+                   '("cpuman.so" "cpuman.import.so")
+                   '((version "0.0.1")))
+
+(install-program 'cpuman-app
+                 '("cpuman")
+                 `((version "0.0.1")))

@@ -1,0 +1,7 @@
+;; -*- scheme -*-
+((synopsis "A tool to manage CPUs on Linux")
+ (author "Mario Domenech Goulart")
+ (category tools)
+ (license "BSD")
+ (depends matchable)
+ (platform linux))
