@@ -21,13 +21,13 @@
 (define (show-cpus-freq frequency-getter)
   (show-cpus (lambda (cpu)
                (format-frequency (frequency-getter cpu)))))
-  
+
 (define (cpus-summary)
   (define (show-frequency frequency-getter cpu online?)
     (string-pad-right (if online?
                           (format-frequency (frequency-getter cpu))
                           "--")
-                      8))  
+                      8))
   (print
    (string-intersperse
     '("CPU" "Online?" "Governor" "Frequency" "Min Frequency" "Max Frequency")
@@ -51,6 +51,7 @@
         (this (pathname-strip-directory (program-name))))
     (fprintf port #<#EOF
 Usage: #this [ <command> ] [ args ]
+       #this @<profile>
 
 Available commands:
 
@@ -69,6 +70,11 @@ separate CPU numbers and dashes specify a range.  Example:
 
 sets CPUs 1, 2, 4, 5 and 6 online.
 
+<profile> is either an absolute pathname or a file under ~~/.cpuman or
+/etc/cpuman that is loaded by #{this}.  It can contain arbitrary Scheme
+code.  This feature can be useful to program custom configuration
+using the API provided by the cpuman module.
+
 When no command is provided, #this prints a summary of the available
 CPUs.
 
@@ -79,7 +85,7 @@ EOF
 (define (die! fmt . args)
   (apply fprintf (cons (current-error-port) (cons fmt args)))
   (exit 1))
-          
+
 (define (check-set given-set)
   (let* ((set (parse-set given-set))
          (available (cpus-available))
@@ -98,6 +104,29 @@ EOF
       governor
       (die! "Invalid governor: ~a" governor)))
 
+(define (maybe-load-profile)
+  (let ((arg (car (command-line-arguments))))
+    (and (eq? (string-ref arg 0) #\@)
+         (let* ((filename (substring arg 1))
+                (profiles
+                 (if (absolute-pathname? filename)
+                     filename
+                     (map (lambda (dir)
+                            (make-pathname dir filename))
+                          (list "/etc/cpuman"
+                                (list (get-environment-variable "HOME")
+                                      ".cpuman")))))
+                (existing-profiles (and (pair? profiles)
+                                        (filter file-exists? profiles))))
+           (if (pair? profiles)
+               (if (null? existing-profiles)
+                   (die! "Could not open profile files.  Attempted\n~a.\nAborting.\n"
+                         (string-intersperse profiles "\n"))
+                   (for-each load existing-profiles))
+               (if (file-exists? profiles) ;; absolute pathname given
+                   (load profiles)
+                   (die! "Could not open ~a.  Aborting.\n" profiles)))))))
+
 (match (command-line-arguments)
   ((or ("--help") ("-help") ("-h")) (usage 0))
   (()              (cpus-summary))
@@ -113,6 +142,7 @@ EOF
   (("freq" seq freq) (set-cpus-frequency! (check-set seq) freq))
   (("max-freq")    (show-cpus-freq cpu-max-frequency))
   (("min-freq")    (show-cpus-freq cpu-min-frequency))
-  (else (usage 1)))
+  (else (or (maybe-load-profile)
+            (usage 1))))
 
 ) ;; end module
