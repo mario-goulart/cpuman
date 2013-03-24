@@ -55,13 +55,29 @@ Usage: #this [ <command> ] [ args ]
 
 Available commands:
 
-available                      List available CPUs
-online [<set>]                 List/set online CPUs
-offline [<set>]                List/set offline CPUs
-freq [<set> <freq>]            List/set CPUs' frequency (<freq> in kilo Hertz)
-governor [<set> <governor>]    List/set CPUs' scaling governor
-max-freq                       List maximum CPUs' frequency
-min-freq                       List minimum CPUs' frequency
+available
+  List available CPUs
+
+online [<set>]
+  List/set online CPUs
+
+offline [<set>]
+  List/set offline CPUs
+
+freq [<freq> [<set>]]
+  List/set CPUs' frequency (<freq> in kilo Hertz). If given no argument, list
+  CPUs/frequencies. If <set> is not provided, set all online CPUs frequency
+  to <freq>.
+
+governor [<governor> [<set>]]
+  List/set CPUs' scaling governor.  If given no argument, list CPUs/governors.
+  If <set> is not provided, set all online CPUs governor to <governor>.
+
+max-freq
+  List maximum CPUs' frequency
+
+min-freq
+  List minimum CPUs' frequency
 
 <set> represents the set of CPUs to apply operations to.  Commas
 separate CPU numbers and dashes specify a range.  Example:
@@ -136,10 +152,13 @@ EOF
   (("offline")     (for-each print (cpus-offline)))
   (("offline" seq) (set-cpus-offline! (check-set seq)))
   (("governor")    (show-cpus cpu-governor))
-  (("governor" seq governor) (set-cpus-governor! (check-set seq)
+  (("governor" governor) (set-cpus-governor! (cpus-online)
+                                             (check-governor governor)))
+  (("governor" governor seq) (set-cpus-governor! (check-set seq)
                                                  (check-governor governor)))
   (("freq")        (show-cpus-freq cpu-frequency))
-  (("freq" seq freq) (set-cpus-frequency! (check-set seq) freq))
+  (("freq" freq)   (set-cpus-frequency! (cpus-online) freq))
+  (("freq" freq seq) (set-cpus-frequency! (check-set seq) freq))
   (("max-freq")    (show-cpus-freq cpu-max-frequency))
   (("min-freq")    (show-cpus-freq cpu-min-frequency))
   (else (or (maybe-load-profile)
