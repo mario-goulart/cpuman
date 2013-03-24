@@ -4,6 +4,7 @@
 (use srfi-1 srfi-13 extras files data-structures)
 (use matchable cpuman)
 
+(declare (uses chicken-syntax))
 
 (define (format-frequency frequency) ;; kernel prints frequencies in KHz
   (cond ((and (>= frequency 1000) (< frequency 1000000))
