@@ -133,8 +133,9 @@ EOF
                           (list "/etc/cpuman"
                                 (list (get-environment-variable "HOME")
                                       ".cpuman")))))
-                (existing-profiles (and (pair? profiles)
-                                        (filter file-exists? profiles))))
+                (existing-profiles (if (pair? profiles)
+                                       (filter file-exists? profiles)
+                                       '())))
            (if (pair? profiles)
                (if (null? existing-profiles)
                    (die! "Could not open profile files.  Attempted\n~a.\nAborting.\n"
