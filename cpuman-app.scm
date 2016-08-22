@@ -112,7 +112,7 @@ EOF
           ((any (lambda (cpu)
                   (> cpu max-cpus))
                 set)
-           (die! "One or more CPUs in the prvided set are not available.\nThe available CPUs are: ~a\n"
+           (die! "One or more CPUs in the provided set are not available.\nThe available CPUs are: ~a\n"
                  (string-intersperse (map number->string available) ", ")))
           (else set))))
 
