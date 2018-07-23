@@ -92,7 +92,12 @@
               set)))
 
 (define (cpu-frequency cpu)
-  (string->number (read-cpu-line "cpu~a/cpufreq/cpuinfo_cur_freq" cpu)))
+  (string->number
+   (read-cpu-line
+    (if (file-exists? "cpu~a/cpufreq/cpuinfo_cur_freq")
+        "cpu~a/cpufreq/cpuinfo_cur_freq"
+        "cpu~a/cpufreq/scaling_cur_freq")
+    cpu)))
 
 (define (cpu-max-frequency cpu)
   (string->number (read-cpu-line "cpu~a/cpufreq/cpuinfo_max_freq" cpu)))
