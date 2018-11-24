@@ -1,8 +1,22 @@
 (module cpuman-app ()
 
-(import scheme chicken)
-(use srfi-1 srfi-13 extras files data-structures)
-(use matchable cpuman)
+(import scheme)
+(cond-expand
+ (chicken-4
+  (import scheme chicken)
+  (use srfi-1 srfi-13 extras files data-structures)
+  (use matchable cpuman))
+ (chicken-5
+  (import (chicken base)
+          (chicken file)
+          (chicken format)
+          (chicken pathname)
+          (chicken process-context)
+          (chicken string))
+  (import matchable srfi-1 srfi-13)
+  (import cpuman))
+ (else
+  (error "Unsupported CHICKEN version.")))
 
 (declare (uses chicken-syntax))
 

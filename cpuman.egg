@@ -1,0 +1,15 @@
+;;; cpuman.egg -*- scheme -*-
+
+((synopsis "A tool to manage CPUs on Linux")
+ (author "Mario Domenech Goulart")
+ (license "BSD")
+ (category tools)
+ (dependencies matchable
+               srfi-1
+               srfi-13)
+ (component-options
+  (csc-options "-O3" "-d1"))
+ (components (extension cpuman)
+             (program cpuman-app
+                      (install-name cpuman)
+                      (component-dependencies cpuman))))

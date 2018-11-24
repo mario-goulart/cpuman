@@ -9,9 +9,22 @@
    parse-set
   )
 
-(import scheme chicken)
-(use srfi-1 srfi-13 posix data-structures extras files)
-(use matchable)
+(import scheme)
+(cond-expand
+ (chicken-4
+  (import chicken)
+  (use srfi-1 srfi-13 posix data-structures extras files)
+  (use matchable))
+ (chicken-5
+  (import (chicken base)
+          (chicken file)
+          (chicken format)
+          (chicken io)
+          (chicken pathname)
+          (chicken string))
+  (import srfi-1 srfi-13))
+ (else
+  (error "Unsupported CHICKEN version.")))
 
 (define (read-cpu-line path . args)
   (with-input-from-file
