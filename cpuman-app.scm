@@ -22,9 +22,9 @@
 
 (define (format-frequency frequency) ;; kernel prints frequencies in KHz
   (cond ((and (>= frequency 1000) (< frequency 1000000))
-         (conc (/ frequency 1000) "MHz"))
+         (conc (inexact->exact (round (/ frequency 1000))) "MHz"))
         (else
-         (conc (/ frequency 1000000) "GHz"))))
+         (conc (inexact->exact (round (/ frequency 1000000))) "GHz"))))
 
 (define (show-cpus proc #!key all-cpus?)
   (for-each (lambda (cpu)
