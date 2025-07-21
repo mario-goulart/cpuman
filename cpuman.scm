@@ -15,7 +15,7 @@
   (import chicken)
   (use srfi-1 srfi-13 posix data-structures extras files)
   (use matchable))
- (chicken-5
+ ((or chicken-5 chicken-6)
   (import (chicken base)
           (chicken file)
           (chicken format)
